@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Compatibility Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .search-box input,
+        .search-box select,
+        .search-box button {
+            flex: 1 1 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .search-box button {
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            cursor: pointer;
+        }
+        .search-box button:hover {
+            background-color: #218838;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .result-item {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .result-item a {
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .result-item a:hover {
+            text-decoration: underline;
+        }
+        .info-tab {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Game Compatibility Checker</h1>
+        <div class="search-box">
+            <input type="text" id="gameName" placeholder="Search for a game...">
+            <select id="os">
+                <option value="ubuntu">Ubuntu</option>
+                <option value="debian">Debian</option>
+                <option value="arch">Arch</option>
+            </select>
+            <select id="version">
+                <option value="latest">Latest</option>
+                <option value="20.04">20.04</option>
+                <option value="18.04">18.04</option>
+                <!-- Add more versions as needed -->
+            </select>
+            <button onclick="searchGame()">Search</button>
+        </div>
+        <div class="results" id="results">
+            <!-- Results will be displayed here -->
+        </div>
+        <div class="info-tab" id="infoTab">
+            <h2 id="infoTitle">Game Information</h2>
+            <p id="infoInstalledSize"></p>
+            <p id="infoDownloadSize"></p>
+            <p id="infoArchitectures"></p>
+        </div>
+    </div>
+
+    <script>
+        function searchGame() {
+            const gameName = document.getElementById('gameName').value;
+            const os = document.getElementById('os').value;
+            const version = document.getElementById('version').value;
+
+            // Example results
+            const results = [
+                { name: "Xonotic", os: "ubuntu", version: "latest", flatpak: true, verified: true, info: { installedSize: "~1.14 GiB", downloadSize: "1.12 GiB", architectures: "aarch64, x86_64" } },
+                { name: "GD Launcher", os: "ubuntu", version: "latest", flatpak: true, verified: true, info: { installedSize: "~234.15 MiB", downloadSize: "95.82 MiB", architectures: "x86_64" } },
+                { name: "Steam", os: "ubuntu", version: "latest", flatpak: true, verified: false, info: { installedSize: "~43.43 MiB", downloadSize: "20.27 MiB", architectures: "x86_64" } }
+                // Add more results as needed
+            ];
+
+            // Filter results based on search criteria
+            const filteredResults = results.filter(game => 
+                game.name.toLowerCase().includes(gameName.toLowerCase()) &&
+                game.os === os &&
+                game.version === version
+            );
+
+            // Display results
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+            if (filteredResults.length > 0) {
+                filteredResults.forEach(game => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.innerHTML = `
+                        <a onclick="showInfoTab('${game.name}', '${game.info.installedSize}', '${game.info.downloadSize}', '${game.info.architectures}')">${game.name}</a> : Flatpak: ${game.flatpak ? 'Yes' : 'No'}, Verified: ${game.verified ? '✅' : '⚠️'}
+                    `;
+                    resultsContainer.appendChild(resultItem);
+                });
+            } else {
+                resultsContainer.innerHTML = 'No results found';
+            }
+        }
+
+        function showInfoTab(name, installedSize, downloadSize, architectures) {
+            const infoTab = document.getElementById('infoTab');
+            document.getElementById('infoTitle').innerText = `${name} Information`;
+            document.getElementById('infoInstalledSize').innerText = `Installed Size: ${installedSize}`;
+            document.getElementById('infoDownloadSize').innerText = `Download Size: ${downloadSize}`;
+            document.getElementById('infoArchitectures').innerText = `Available Architectures: ${architectures}`;
+            infoTab.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
